@@ -176,6 +176,17 @@ class Product{
       for(let optionId in param.options){
         const option = param.options[optionId];
         console.log(optionId, option);
+
+        const optionSelected = formData[paramId] && formData[paramId].includes(optionId);
+
+        if(optionSelected && !option.default){
+          price += option.price;
+        }
+
+        if(!optionSelected && option.default){
+          price -= option.price;
+        }
+
       }
     }
     thisProduct.priceElem.innerHTML = price;
