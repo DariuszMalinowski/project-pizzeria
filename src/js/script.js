@@ -119,6 +119,7 @@ class Product{
     thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
     thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
     thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+    thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
   }
 
   initAccordion(){
@@ -177,8 +178,10 @@ class Product{
         const option = param.options[optionId];
         console.log(optionId, option);
 
+        //sprawdzenie zaznaczenia opcji
         const optionSelected = formData[paramId] && formData[paramId].includes(optionId);
 
+        //Jeśli wybrane to dodaj cenę (jeśli nie domyślne)
         if(optionSelected && !option.default){
           price += option.price;
         }
@@ -187,6 +190,19 @@ class Product{
           price -= option.price;
         }
 
+        //znalezienie zdjęć
+        const optionImages = thisProduct.imageWrapper.querySelectorAll(`.${paramId}-${optionId}`);
+
+        //pokazywanie i ukrywanie zdjęć
+        if(optionSelected){
+        for(let img of optionImages){
+          img.classList.add(classNames.menuProduct.imageVisible);
+        }
+      }else{
+        for(let img of optionImages){
+          img.classList.remove(classNames.menuProduct.imageVisible);
+        }
+      }
       }
     }
     thisProduct.priceElem.innerHTML = price;
