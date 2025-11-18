@@ -109,6 +109,14 @@ class AmountWidget {
       thisWidget.setValue(thisWidget.value + 1);
     });
   }
+
+  announce(){
+    const thisWidget = this;
+
+    const event = new Event('updated');
+    thisWidget.element.dispatchEvent(event);
+  }
+
 }
 
 
@@ -256,6 +264,7 @@ class Product{
         }
       }
     }
+    price *= thisProduct.amountWidget.value;
     thisProduct.priceElem.innerHTML = price;
   }
 
@@ -263,6 +272,10 @@ class Product{
     const thisProduct = this;
 
     thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
+    thisProduct.amountWidgetElem.addEventListener('updated', function(){
+      thisProduct.processOrder();
+    });
+
   }
 
 }
