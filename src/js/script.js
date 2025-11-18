@@ -52,11 +52,71 @@ const templates = {
   menuProduct: Handlebars.compile(document.querySelector(select.templateOf.menuProduct).innerHTML),
 };
 
+class AmountWidget {
+  constructor(element){
+    const thisWidget = this;
+
+
+    thisWidget.getElements(element);
+    thisWidget.setValue(thisWidget.input.value);
+    thisWidget.initActions();
+  }
+
+  getElements(element){
+    const thisWidget = this;
+
+    thisWidget.element = element;
+    thisWidget.input = thisWidget.element.querySelector(select.widgets.amount.input);
+    thisWidget.linkDecrease = thisWidget.element.querySelector(select.widgets.amount.linkDecrease);
+    thisWidget.linkIncrease = thisWidget.element.querySelector(select.widgets.amount.linkIncrease);
+  }
+
+
+  setValue(value){
+    const thisWidget = this;
+
+    const newValue = parseInt(value);
+
+    if(!isNaN(newValue)
+      && newValue >= settings.amountWidget.defaultMin
+      && newValue <= settings.amountWidget.defaultMax){
+
+      thisWidget.value = newValue;
+      thisWidget.input.value = thisWidget.value;
+
+      thisWidget.element.dispatchEvent(new Event('updated'));
+    } else {
+      // jeśli wpisano tekst lub bzdurę przywraca do poprzedniej wartości
+      thisWidget.input.value = thisWidget.value;
+    }
+  }
+  
+
+  initActions(){
+    const thisWidget = this;
+
+    thisWidget.input.addEventListener('change', function(){
+      thisWidget.setValue(thisWidget.input.value);
+    });
+
+    thisWidget.linkDecrease.addEventListener('click', function(event){
+      event.preventDefault();
+      thisWidget.setValue(thisWidget.value - 1);
+    });
+
+    thisWidget.linkIncrease.addEventListener('click', function(event){
+      event.preventDefault();
+      thisWidget.setValue(thisWidget.value + 1);
+    });
+  }
+}
+
+
+
 const app = {
 
   initMenu: function(){
     const thisApp = this;
-    console.log('thisApp.data:', thisApp.data);
     // Przekazanie nazwy właściwości oraz obiektu.
     for(let productData in thisApp.data.products){
       new Product(productData, thisApp.data.products[productData]);
@@ -65,11 +125,6 @@ const app = {
 
   init: function(){
     const thisApp = this;
-    console.log('*** App starting ***');
-    console.log('thisApp:', thisApp);
-    console.log('classNames:', classNames);
-    console.log('settings:', settings);
-    console.log('templates:', templates);
 
     thisApp.initData();
     thisApp.initMenu();
@@ -93,9 +148,9 @@ class Product{
     thisProduct.getElements();
     thisProduct.initAccordion();
     thisProduct.initOrderForm();
+    thisProduct.initAmountWidget();
     thisProduct.processOrder();
 
-    console.log('new Product:', thisProduct);
   }
 
   renderInMenu(){
@@ -120,6 +175,7 @@ class Product{
     thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
     thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
     thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
+    thisProduct.amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget);
   }
 
   initAccordion(){
@@ -143,7 +199,6 @@ class Product{
 
   initOrderForm(){
     const thisProduct = this;
-    console.log('formularz zamówienia:', this.initOrderForm);
 
     thisProduct.form.addEventListener('submit', function(event){
       event.preventDefault();
@@ -164,19 +219,15 @@ class Product{
 
   processOrder(){
     const thisProduct = this;
-    console.log('Proces zamówienia:', this.processOrder);
     const formData = utils.serializeFormToObject(thisProduct.form);
-    console.log('formData', formData);
 
     let price = thisProduct.data.price;
 
     for(let paramId in thisProduct.data.params){
       const param = thisProduct.data.params[paramId];
-      console.log(paramId, param);
 
       for(let optionId in param.options){
         const option = param.options[optionId];
-        console.log(optionId, option);
 
         //sprawdzenie zaznaczenia opcji
         const optionSelected = formData[paramId] && formData[paramId].includes(optionId);
@@ -195,17 +246,23 @@ class Product{
 
         //pokazywanie i ukrywanie zdjęć
         if(optionSelected){
-        for(let img of optionImages){
-          img.classList.add(classNames.menuProduct.imageVisible);
+          for(let img of optionImages){
+            img.classList.add(classNames.menuProduct.imageVisible);
+          }
+        }else{
+          for(let img of optionImages){
+            img.classList.remove(classNames.menuProduct.imageVisible);
+          }
         }
-      }else{
-        for(let img of optionImages){
-          img.classList.remove(classNames.menuProduct.imageVisible);
-        }
-      }
       }
     }
     thisProduct.priceElem.innerHTML = price;
+  }
+
+  initAmountWidget(){
+    const thisProduct = this;
+
+    thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
   }
 
 }
