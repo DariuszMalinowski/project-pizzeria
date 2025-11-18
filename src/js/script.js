@@ -58,7 +58,12 @@ class AmountWidget {
 
 
     thisWidget.getElements(element);
-    thisWidget.setValue(thisWidget.input.value);
+    const startValue = thisWidget.input.value;
+    if(startValue){
+      thisWidget.setValue(startValue);
+    } else {
+      thisWidget.setValue(settings.amountWidget.defaultValue);
+    }
     thisWidget.initActions();
   }
 
