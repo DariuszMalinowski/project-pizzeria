@@ -158,6 +158,8 @@ class Cart{
 
     thisCart.getElements(element);
 
+    thisCart.initActions();
+
     console.log('new Cart', thisCart);
   }
 
@@ -167,7 +169,22 @@ class Cart{
     thisCart.dom = {};
 
     thisCart.dom.wrapper = element;
+    thisCart.dom.productList = element.querySelector(select.cart.productList);
+    thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(select.cart.toggleTrigger);
   }
+
+  initActions() {
+    const thisCart = this;
+
+    // Listener do kliknięcia toggleTrigger
+    thisCart.dom.toggleTrigger.addEventListener('click', function (event) {
+      event.preventDefault();
+
+      // Toggle klasy active
+      thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+    });
+  }
+
 }
 
 const app = {
