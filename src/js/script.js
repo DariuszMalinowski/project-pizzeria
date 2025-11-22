@@ -157,7 +157,6 @@ class Cart{
     thisCart.products = [];
 
     thisCart.getElements(element);
-
     thisCart.initActions();
 
     console.log('new Cart', thisCart);
@@ -183,7 +182,27 @@ class Cart{
       // Toggle klasy active
       thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
     });
+
+    document.addEventListener('add-to-cart', function(event) {
+      thisCart.add(event.detail.product);
+    });
   }
+
+  add(menuProduct){
+    const thisCart = this;
+
+    const generatedHTML = templates.cartProduct(menuProduct);
+
+    const generatedDOM = utils.createDOMFromHTML(generatedHTML);
+
+    thisCart.dom.productList.appendChild(generatedDOM);
+
+    thisCart.products.push(menuProduct);
+    console.log('adding product', menuProduct);
+  }
+
+
+
 
 }
 
@@ -296,6 +315,7 @@ class Product{
     thisProduct.cartButton.addEventListener('click', function(event){
       event.preventDefault();
       thisProduct.processOrder();
+      thisProduct.addToCart();
     });
   }
 
@@ -338,9 +358,52 @@ class Product{
         }
       }
     }
+
+    thisProduct.priceSingle = price;
     price *= thisProduct.amountWidget.value;
     thisProduct.priceElem.innerHTML = price;
   }
+
+  prepareCartProductParams(){
+    const thisProduct = this;
+
+    const formData = utils.serializeFormToObject(thisProduct.form);
+    const paramsSummary = {};
+
+    // zabezpieczenie gdy brak parametrów w danych produktu
+    if(!thisProduct.data.params) return paramsSummary;
+
+    for(let paramId in thisProduct.data.params){
+      const param = thisProduct.data.params[paramId];
+
+      // przygotuj strukturę dla tej kategorii
+      paramsSummary[paramId] = {
+        label: param.label,
+        options: {}
+      };
+
+      // przejdź po opcjach parametru
+      for(let optionId in param.options){
+        const option = param.options[optionId];
+
+        // sprawdź, czy opcja jest zaznaczona w formularzu
+        const optionSelected = formData[paramId] && formData[paramId].includes(optionId);
+
+        if(optionSelected){
+          // dodaj do summary: key = optionId, value = pełna nazwa opcji (label)
+          paramsSummary[paramId].options[optionId] = option.label;
+        }
+      }
+
+      // jeśli nie wybrano żadnej opcji w tej kategorii, usuń pusty obiekt options
+      if(Object.keys(paramsSummary[paramId].options).length === 0){
+        delete paramsSummary[paramId];
+      }
+    }
+
+    return paramsSummary;
+  }
+
 
   initAmountWidget(){
     const thisProduct = this;
@@ -349,7 +412,39 @@ class Product{
     thisProduct.amountWidgetElem.addEventListener('updated', function(){
       thisProduct.processOrder();
     });
+  }
 
+  addToCart(){
+    const thisProduct = this;
+
+    //const preparedProduct = thisProduct.prepareCartProduct();
+
+    const event = new CustomEvent('add-to-cart', {
+      bubbles: true,
+      detail: {
+        product: thisProduct.prepareCartProduct(),
+      },
+    });
+
+    thisProduct.element.dispatchEvent(event);
+
+  }
+
+  prepareCartProduct(){
+    const thisProduct = this;
+
+    const productSummary = {};
+
+    productSummary.id = thisProduct.id;
+    productSummary.name = thisProduct.data.name;
+    productSummary.amount = thisProduct.amountWidget.value;
+
+    productSummary.priceSingle = thisProduct.priceSingle;
+    productSummary.price = productSummary.priceSingle * productSummary.amount;
+
+    productSummary.params = thisProduct.prepareCartProductParams();
+
+    return productSummary;
   }
 
 }
