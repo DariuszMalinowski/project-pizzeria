@@ -72,6 +72,11 @@ const settings = {
   cart: {
     defaultDeliveryFee: 20,
   },
+  db: {
+    url: 'http://localhost:3131',
+    products: 'products',
+    orders: 'orders',
+  },
 };
 
 const templates = {
@@ -175,7 +180,11 @@ class Cart{
     thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelectorAll(select.cart.totalPrice);
     // liczba sztuk w koszyku
     thisCart.dom.totalNumber = thisCart.dom.wrapper.querySelector(select.cart.totalNumber);
- 
+    //nowe
+    thisCart.dom.form = thisCart.dom.wrapper.querySelector(select.cart.form);
+    thisCart.dom.formSubmit = thisCart.dom.wrapper.querySelector(select.cart.formSubmit);
+    thisCart.dom.phone = thisCart.dom.wrapper.querySelector(select.cart.phone);
+    thisCart.dom.address = thisCart.dom.wrapper.querySelector(select.cart.address);
   }
 
   initActions() {
@@ -188,11 +197,17 @@ class Cart{
 
     document.addEventListener('add-to-cart', function(event) {
       thisCart.add(event.detail.product);
-    });;
+    });
 
-      thisCart.dom.wrapper.addEventListener('cart-update', function () {
+    thisCart.dom.wrapper.addEventListener('cart-update', function () {
       thisCart.update();
-      });
+    });
+
+    thisCart.dom.form.addEventListener('submit', function(event){
+      event.preventDefault();
+      thisCart.sendOrder();
+    });
+
   }
 
   add(menuProduct){
@@ -235,12 +250,12 @@ class Cart{
     thisCart.subtotalPrice = subtotalPrice;
 
     if (totalNumber > 0) {
-    thisCart.totalPrice = subtotalPrice + deliveryFee;
-    thisCart.deliveryFee = deliveryFee;
-  } else {
-    thisCart.totalPrice = 0;
-    thisCart.deliveryFee = 0;
-  }
+      thisCart.totalPrice = subtotalPrice + deliveryFee;
+      thisCart.deliveryFee = deliveryFee;
+    } else {
+      thisCart.totalPrice = 0;
+      thisCart.deliveryFee = 0;
+    }
 
     // AKTUALIZACJA DOM 
 
@@ -257,7 +272,44 @@ class Cart{
     for (let elem of thisCart.dom.totalPrice) {
       elem.innerHTML = thisCart.totalPrice;
     }
-}
+  }
+
+  sendOrder() {
+    const thisCart = this;
+
+    const url = settings.db.url + '/' + settings.db.orders;
+
+    const payload = {
+      address: thisCart.dom.address.value,
+      phone: thisCart.dom.phone.value,
+      totalPrice: thisCart.totalPrice,
+      subtotalPrice: thisCart.subtotalPrice,
+      totalNumber: thisCart.totalNumber,
+      deliveryFee: thisCart.deliveryFee,
+      products: [],
+    };
+
+    for (let product of thisCart.products) {
+      payload.products.push(product.getData());
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    fetch(url, options)
+      .then(function(response){
+        return response.json();
+      })
+      .then(function(parsedResponse){
+        console.log('order response:', parsedResponse);
+      });
+  }
+
 }
 
 
@@ -325,6 +377,18 @@ class CartProduct {
     });
   }
 
+  getData() {
+    const thisCartProduct = this;
+
+    return {
+      id: thisCartProduct.id,
+      amount: thisCartProduct.amount,
+      price: thisCartProduct.price,
+      priceSingle: thisCartProduct.priceSingle,
+      params: thisCartProduct.params,
+    };
+  }
+
 }
 
 const app = {
@@ -333,7 +397,8 @@ const app = {
     const thisApp = this;
     // Przekazanie nazwy właściwości oraz obiektu.
     for(let productData in thisApp.data.products){
-      new Product(productData, thisApp.data.products[productData]);
+      //new Product(productData, thisApp.data.products[productData]);
+      new Product(thisApp.data.products[productData].id, thisApp.data.products[productData]);
     }
   },
  
@@ -348,14 +413,21 @@ const app = {
     const thisApp = this;
 
     thisApp.initData();
-    thisApp.initMenu();
     thisApp.initCart();
   },
 
   initData: function(){
     const thisApp = this;
 
-    thisApp.data = dataSource;
+    thisApp.data = {};
+    const url = settings.db.url + '/' + settings.db.products;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(parsedResponse => {
+        thisApp.data.products = parsedResponse;
+        thisApp.initMenu();   // przeniesione tutaj
+      });
   },
 };
 
