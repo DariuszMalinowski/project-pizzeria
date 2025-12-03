@@ -3,11 +3,22 @@ import { settings, select, classNames } from './settings.js';
 
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
+import Booking from './components/Booking.js';
 //import CartProduct from './components/CartProduct.js';
 //import AmountWidget from './components/AmountWidget.js';
 
 
 const app = {
+
+  initBooking() {
+    const thisApp = this;
+
+    // znajdź kontener widgetu rezerwacji
+    const bookingContainer = document.querySelector(select.containerOf.booking);
+
+    // utwórz instancję Booking i przekaż kontener
+    thisApp.booking = new Booking(bookingContainer);
+  },
 
   initPages: function(){
     const thisApp = this;
@@ -87,6 +98,7 @@ const app = {
     thisApp.initPages();
     thisApp.initData();
     thisApp.initCart();
+    thisApp.initBooking();
   },
 
   initData: function(){
