@@ -158,10 +158,10 @@
     }
 
     /* ✔️ zielony dla wybranego stolika (PRZENIESIONE) */
-    &.selected {
-      background-color: #4caf50;
-      color: #fff;
-    }
+    // &.selected {
+    // background-color: #4caf50;
+    // color: #fff;
+    // }
 
     /* ❗ czerwony/zablokowany stolik */
     &.booked {
@@ -179,6 +179,11 @@
         opacity: 0.4;
       }
     }
+  }
+
+  .table.selected {
+    background: #00c851 !important; /* zielony */
+    border: 3px solid #007E33;
   }
 
   

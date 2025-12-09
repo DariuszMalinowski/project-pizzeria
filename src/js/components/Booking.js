@@ -8,15 +8,15 @@ class Booking {
   constructor(element) {
     const thisBooking = this;
 
+    thisBooking.selectedTable = null;
+
     thisBooking.render(element);
     thisBooking.initWidgets();
-    //thisBooking.getData();
   }
 
   getData() {
     const thisBooking = this;
 
-    // Używamy datePickerWidget zamiast dom.datePicker
     const startDateParam = settings.db.dateStartParamKey + '=' + utils.dateToStr(thisBooking.datePickerWidget.minDate);
     const endDateParam = settings.db.dateEndParamKey + '=' + utils.dateToStr(thisBooking.datePickerWidget.maxDate);
 
@@ -35,7 +35,6 @@ class Booking {
     Promise.all([fetch(urls.booking), fetch(urls.eventsCurrent), fetch(urls.eventsRepeat)])
       .then(allResponses => Promise.all(allResponses.map(res => res.json())))
       .then(([bookings, eventsCurrent, eventsRepeat]) => {
-        // Upewniamy się, że tablice są poprawne
         bookings = bookings || [];
         eventsCurrent = eventsCurrent || [];
         eventsRepeat = eventsRepeat || [];
@@ -69,8 +68,8 @@ class Booking {
       }
     }
 
-    thisBooking.updateDOM(); // od razu aktualizujemy widok
-    //thisBooking.initTables();
+    thisBooking.updateDOM();
+    thisBooking.initTables(); 
   }
 
   makeBooked(date, hour, duration, table) {
@@ -102,22 +101,25 @@ class Booking {
 
       if (
         thisBooking.booked[date] &&
-      thisBooking.booked[date][hour] &&
-      thisBooking.booked[date][hour].includes(tableId)
+        thisBooking.booked[date][hour] &&
+        thisBooking.booked[date][hour].includes(tableId)
       ) {
-        table.classList.add('booked'); // czerwony/stolik zajęty
+        table.classList.add('booked');
+        table.classList.remove('selected'); // NIE pozwól, by zaznaczony był też booked
       } else {
         table.classList.remove('booked');
+        table.classList.remove('selected'); // usuwamy selected dla wolnych po zmianie daty/godziny
       }
     }
 
-    // reset zaznaczonego stolika jeśli został zajęty
+    // Jeśli wybrany stolik stał się zajęty → reset
     if (thisBooking.selectedTable) {
       const selectedId = parseInt(thisBooking.selectedTable.getAttribute('data-table'));
+
       if (
         thisBooking.booked[date] &&
-      thisBooking.booked[date][hour] &&
-      thisBooking.booked[date][hour].includes(selectedId)
+        thisBooking.booked[date][hour] &&
+        thisBooking.booked[date][hour].includes(selectedId)
       ) {
         thisBooking.selectedTable.classList.remove('selected');
         thisBooking.selectedTable = null;
@@ -125,20 +127,18 @@ class Booking {
     }
   }
 
-
   initTables() {
     const thisBooking = this;
 
-    // Event delegation: nasłuchujemy kliknięć na wrapperze
-    thisBooking.dom.wrapper.addEventListener('click', function(event) {
-      const clicked = event.target.closest('.table'); // upewniamy się, że kliknięto stolik
-      if (!clicked) return; // jeśli kliknięto gdzie indziej, nic nie robimy
+    thisBooking.dom.tablesWrapper.addEventListener('click', function (event) {
+      const clicked = event.target.closest('.table');
+      if (!clicked) return;
 
       const tableId = parseInt(clicked.getAttribute('data-table'));
       const date = thisBooking.datePickerWidget.value;
       const hour = utils.hourToNumber(thisBooking.hourPickerWidget.value);
 
-      // jeśli stolik jest zajęty, nie pozwalamy na wybór
+      // jeśli stolik jest zajęty → blokada
       if (
         thisBooking.booked[date] &&
         thisBooking.booked[date][hour] &&
@@ -147,23 +147,24 @@ class Booking {
         return;
       }
 
-      // jeśli kliknięto już wybrany stolik, anulujemy wybór
+      // kliknięto ten sam stolik → odznacz
       if (thisBooking.selectedTable === clicked) {
         clicked.classList.remove('selected');
         thisBooking.selectedTable = null;
-      } else {
-        // jeśli kliknięto inny stolik, resetujemy stary wybór
-        if (thisBooking.selectedTable) {
-          thisBooking.selectedTable.classList.remove('selected');
-        }
-
-        clicked.classList.add('selected');
-        thisBooking.selectedTable = clicked;
+        return;
       }
+
+      // kliknięto inny stolik → usuń selected z poprzedniego
+      if (thisBooking.selectedTable) {
+        thisBooking.selectedTable.classList.remove('selected');
+      }
+
+      clicked.classList.add('selected');
+      thisBooking.selectedTable = clicked;
     });
 
-    // Reset zaznaczenia przy zmianie daty, godziny, liczby osób lub godzin
-    const resetSelection = function() {
+    // Reset wyboru przy zmianie daty/godziny/liczby osób
+    const resetSelection = () => {
       if (thisBooking.selectedTable) {
         thisBooking.selectedTable.classList.remove('selected');
         thisBooking.selectedTable = null;
@@ -175,7 +176,6 @@ class Booking {
     thisBooking.peopleAmountWidget.dom.wrapper.addEventListener('updated', resetSelection);
     thisBooking.hoursAmountWidget.dom.wrapper.addEventListener('updated', resetSelection);
   }
-
 
   render(element) {
     const thisBooking = this;
@@ -190,7 +190,9 @@ class Booking {
     thisBooking.dom.hoursAmount = thisBooking.dom.wrapper.querySelector(select.booking.hoursAmount);
     thisBooking.dom.datePicker = thisBooking.dom.wrapper.querySelector(select.widgets.datePicker.wrapper);
     thisBooking.dom.hourPicker = thisBooking.dom.wrapper.querySelector(select.widgets.hourPicker.wrapper);
-    thisBooking.dom.tables = thisBooking.dom.wrapper.querySelectorAll('.floor-plan .table');
+
+    thisBooking.dom.tablesWrapper = thisBooking.dom.wrapper.querySelector('.floor-plan');
+    thisBooking.dom.tables = thisBooking.dom.tablesWrapper.querySelectorAll('.table');
   }
 
   initWidgets() {
@@ -201,15 +203,15 @@ class Booking {
     thisBooking.datePickerWidget = new DatePicker(thisBooking.dom.datePicker);
     thisBooking.hourPickerWidget = new HourPicker(thisBooking.dom.hourPicker);
 
-    thisBooking.datePickerWidget.dom.wrapper.addEventListener('updated', function () {
+    thisBooking.datePickerWidget.dom.wrapper.addEventListener('updated', () => {
       thisBooking.updateDOM();
     });
 
-    thisBooking.hourPickerWidget.dom.wrapper.addEventListener('updated', function () {
+    thisBooking.hourPickerWidget.dom.wrapper.addEventListener('updated', () => {
       thisBooking.updateDOM();
     });
-    thisBooking.initTables();
 
+    //thisBooking.initTables();
     thisBooking.getData();
   }
 }
