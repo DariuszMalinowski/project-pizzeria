@@ -16,12 +16,14 @@ class AmountWidget extends BaseWidget{
 
 
     thisWidget.getElements(element);
+    //thisWidget.dom.input.value = thisWidget.value;
     /*const startValue = thisWidget.dom.input.value;
     if(startValue){
       thisWidget.setValue(startValue);
     } else {
       thisWidget.setValue(settings.amountWidget.defaultValue);
     }*/
+    thisWidget.renderValue(); 
     thisWidget.initActions();
   }
 
@@ -42,7 +44,6 @@ class AmountWidget extends BaseWidget{
 
   renderValue(){
     const thisWidget = this;
-
     thisWidget.dom.input.value = thisWidget.value;
   }
 
@@ -63,8 +64,6 @@ class AmountWidget extends BaseWidget{
       thisWidget.setValue(thisWidget.value + 1);
     });
   }
-
- 
 }
 
 export default AmountWidget;
