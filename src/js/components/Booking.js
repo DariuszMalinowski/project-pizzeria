@@ -177,6 +177,62 @@ class Booking {
     thisBooking.hoursAmountWidget.dom.wrapper.addEventListener('updated', resetSelection);
   }
 
+  sendBooking() {
+    const thisBooking = this;
+
+    const url = settings.db.url + '/' + settings.db.bookings;
+
+    // Pobieramy wartości z formularza
+    const payload = {
+      date: thisBooking.datePickerWidget.value,
+      hour: thisBooking.hourPickerWidget.value,
+      table: thisBooking.selectedTable 
+        ? parseInt(thisBooking.selectedTable.getAttribute('data-table')) 
+        : null,
+      duration: parseInt(thisBooking.hoursAmountWidget.value),
+      ppl: parseInt(thisBooking.peopleAmountWidget.value),
+      starters: [],
+      phone: thisBooking.dom.wrapper.querySelector('[name="phone"]').value,
+      address: thisBooking.dom.wrapper.querySelector('[name="address"]').value,
+    };
+
+    // Zaznaczone starters (checkboxy)
+    const starters = thisBooking.dom.wrapper.querySelectorAll(
+      'input[name="starter"]:checked'
+    );
+
+    for (let starter of starters) {
+      payload.starters.push(starter.value);
+    }
+
+    // Ustawienia requesta
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    // Wysyłamy rezerwację
+    fetch(url, options)
+      .then((response) => response.json())
+      .then((parsedResponse) => {
+        console.log('booking response:', parsedResponse);
+
+        // ➤ Po sukcesie dodajemy rezerwację do thisBooking.booked
+        thisBooking.makeBooked(
+          payload.date,
+          payload.hour,
+          payload.duration,
+          payload.table
+        );
+
+        // ➤ Odświeżamy DOM
+        thisBooking.updateDOM();
+      });
+  }
+
   render(element) {
     const thisBooking = this;
 
@@ -210,6 +266,12 @@ class Booking {
     thisBooking.hourPickerWidget.dom.wrapper.addEventListener('updated', () => {
       thisBooking.updateDOM();
     });
+
+    thisBooking.dom.wrapper.querySelector('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      thisBooking.sendBooking();
+    });
+
 
     //thisBooking.initTables();
     thisBooking.getData();
