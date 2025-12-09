@@ -147,20 +147,27 @@
     transform: rotate(45deg);
     transform-origin: 50% 50%;
     cursor: pointer;
-  
+    transition: 0.3s;
+
     &--round {
       border-radius: 50%;
-  
+
       &::after {
         border-radius: 50%;
       }
-  
     }
-  
+
+    /* ✔️ zielony dla wybranego stolika (PRZENIESIONE) */
+    &.selected {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    /* ❗ czerwony/zablokowany stolik */
     &.booked {
       cursor: not-allowed;
       color: lighten($color-dark, 40%);
-  
+
       &::after {
         position: absolute;
         content: '';
@@ -171,9 +178,9 @@
         background: $color-dark;
         opacity: 0.4;
       }
-  
     }
   }
+
   
   [data-table="1"] {
     left: 40px;
