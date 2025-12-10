@@ -9,6 +9,7 @@ export const select = {
   containerOf: {
     menu: '#product-list',
     cart: '#cart',
+    home: '#home',
     pages: '#pages',
     booking: '.booking-wrapper',
   },

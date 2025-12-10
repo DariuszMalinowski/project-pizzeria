@@ -9,6 +9,7 @@
   <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="vendor/range-slider.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.3.0/flickity.min.css">
   <link rel="stylesheet" href="css/style.css">
 
 </head>
@@ -22,6 +23,7 @@
           <h2 class="logo__subtitle">the best homemade Italian food</h2>
         </div>
         <div class="main-nav">
+          <a href="#home">HOME</a>
           <a href="#order">Order</a>
           <a href="#booking">Booking</a>
         </div>
@@ -63,13 +65,70 @@
   </header>
 
   <div id="pages">
+
+    <section id="home" class="page">
+      <div class="container">
+
+        <!-- Boxy -->
+        <div class="home-boxes-wrapper">
+          <div class="home-boxes-row">
+            <div class="home-box order-box">
+              <h2>Order Online</h2>
+              <p>Delicious pizza delivered to your home!</p>
+            </div>
+            <div class="home-box booking-box">
+              <h2>Book a Table</h2>
+              <p>Reserve your spot and enjoy your meal!</p>
+            </div>
+          </div>
+            <div class="home-box opening-hours-box">
+              <h2>Opening Hours</h2>
+              <p>Mon-Sun: 12:00 – 24:00</p>
+            </div>
+        </div>
+
+        <!-- Karuzela -->
+        <div class="carousel">
+          <div class="carousel-cell">
+            <img class="testimonial-avatar" src="images/assets/pizza-3.jpg" alt="John D.">
+            <div class="testimonial-text">
+              <p>"Amazing pizza, will order again!"</p>
+              <span>- John D.</span>
+            </div>
+          </div>
+          <div class="carousel-cell">
+            <img class="testimonial-avatar" src="images/assets/pizza-4.jpg" alt="Maria S.">
+            <div class="testimonial-text">
+              <p>"Best Italian food in town!"</p>
+              <span>- Maria S.</span>
+            </div>
+          </div>
+          <div class="carousel-cell">
+            <img class="testimonial-avatar" src="images/assets/pizza-5.jpg" alt="Alex K.">
+            <div class="testimonial-text">
+              <p>"Friendly staff and great taste!"</p>
+              <span>- Alex K.</span>
+            </div>
+          </div>
+        </div>
+        <!--Galeria-->
+        <div class="gallery-grid">
+          <div class="gallery-item pizza-3"></div>
+          <div class="gallery-item pizza-4"></div>
+          <div class="gallery-item pizza-5"></div>
+          <div class="gallery-item pizza-6"></div>
+          <div class="gallery-item pizza-7"></div>
+          <div class="gallery-item pizza-8"></div>
+        </div>
+      </div>
+    </section>
+
    <section id="order">
      <div id="product-list" class="product-list container"></div>
    </section>
    <section id="booking">
      <div class="booking-wrapper container"></div>
    </section>
-  </div>
 
   <script id="template-cart-product" type="text/x-handlebars-template">
     <li>
@@ -101,7 +160,6 @@
 
   <script id="template-menu-product" type="text/x-handlebars-template">
     <article class="product"> <!-- product -->
-
         <header class="product__header">
           <h3 class="product__name no-spacing">{{ name }} <i class="fas fa-chevron-down product__icon"></i></h3>
           <p class="product__base-price no-spacing">${{ price }}</p>
@@ -174,7 +232,6 @@
             {{/each}}
           </div>
         </div>
-
     </article> <!-- .product -->
   </script>
 
@@ -243,10 +300,12 @@
       </form>
     </div>
   </script>
-
+</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.0/handlebars.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="vendor/range-slider.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.3.0/flickity.pkgd.min.js"></script>
   <script src="js/app.js" type="module"></script>
+
 </body>
 </html>

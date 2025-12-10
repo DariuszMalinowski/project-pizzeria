@@ -1,0 +1,217 @@
+/* --- zmienna kolor akcentu --- */
+:root {
+  --accent: #e63946; /* zmień na swój kolor przewodni jeśli chcesz */
+  --transition-fast: 0.25s;
+  --transition-medium: 0.35s;
+}
+
+/* ---- HOME BOXY ---- */
+.home-boxes-wrapper {
+  margin-top: 10px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* odstęp między rzędami */
+}
+
+/* rząd dwóch boxów */
+.home-boxes-row {
+  display: flex;
+  gap: 20px;
+}
+
+.home-box {
+  flex: 1; /* oba boxy zajmują równą szerokość */
+  height: 250px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.home-box:hover {
+  transform: scale(1.05);
+}
+
+/* box z godzinami otwarcia - pełna szerokość */
+.opening-hours-box {
+  height: 170px;
+  background-color: #f15a24; /* lub inny kontrastujący kolor */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  font-size: 1.5rem;
+}
+
+.order-box {
+  background-image: url('../images/assets/pizza-1.jpg');
+}
+
+/* Book a Table box */
+.booking-box {
+  background-image: url('../images/assets/pizza-2.jpg');
+}
+
+
+.home-box h2 {
+  font-size: 1.6rem;
+  margin: 0 0 0.25rem;
+  transition: transform var(--transition-fast), color var(--transition-fast);
+  will-change: transform, color;
+}
+
+.home-box p {
+  margin: 0;
+  opacity: 0.9;
+  transition: transform var(--transition-medium), opacity var(--transition-medium);
+}
+
+/* animacja napisów przy hover - lekkie przesunięcie i skala */
+.home-box:hover h2 {
+  transform: translateY(-6px) scale(1.04);
+  color: var(--accent);
+}
+
+.home-box:hover p {
+  transform: translateY(-4px);
+  opacity: 1;
+}
+
+/* ---- KARUZELA OPINII (Flickity) ---- */
+.carousel {
+  margin: 2rem 0 3rem;
+  padding-bottom: 1rem;
+}
+
+.carousel .carousel-cell {
+  background: transparent;
+  text-align: center;
+  padding: 1rem 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  transition: transform var(--transition-medium), opacity var(--transition-medium);
+}
+
+.carousel .carousel-cell p {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin-bottom: 0.6rem;
+  color: #222;
+}
+
+.carousel .carousel-cell span {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+
+.flickity-page-dots {
+  margin-top: 12px;
+}
+
+.carousel .is-selected {
+  transform: translateY(-4px);
+}
+
+/* fallback (jeśli używamy klasy is-selected w fallback JS) */
+.carousel-cell.is-selected {
+  opacity: 1;
+}
+
+.testimonial-avatar {
+  //width: 400px;  /* zmniejszona szerokość */
+  //height: 250px; /* zmniejszona wysokość */
+  //border-radius: 90%;
+  //object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ---- GALERIA (jeśli będziesz dodawać) ---- */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 kolumny */
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.gallery-item {
+  width: 100%;
+  padding-top: 100%; /* kwadrat */
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
+}
+
+.gallery-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover::after {
+  opacity: 1;
+}
+
+/* Jeśli chcesz dodać ikony na hover */
+.gallery-item i {
+  color: white;
+  font-size: 1.5rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.gallery-item:hover i {
+  opacity: 1;
+  color: #f15a24; /* kolor przewodni */
+}
+
+.gallery-item.pizza-3 {
+  background-image: url('../images/assets/pizza-3.jpg');
+}
+
+.gallery-item.pizza-4 {
+  background-image: url('../images/assets/pizza-4.jpg');
+}
+
+.gallery-item.pizza-5 {
+  background-image: url('../images/assets/pizza-5.jpg');
+}
+
+.gallery-item.pizza-6 {
+  background-image: url('../images/assets/pizza-6.jpg');
+}
+
+.gallery-item.pizza-7 {
+  background-image: url('../images/assets/pizza-7.jpg');
+}
+
+.gallery-item.pizza-8 {
+  background-image: url('../images/assets/pizza-8.jpg');
+}
