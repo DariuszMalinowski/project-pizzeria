@@ -11,12 +11,14 @@ class BaseWidget{
     thisWidget.correctValue = initialValue;
   }
 
+  //getter zwraca aktualną wartość widgetu
   get value(){
     const thisWidget = this;
 
     return thisWidget.correctValue;
   }
 
+  //ustawia nową wartosc widgetu
   set value(value){
     const thisWidget = this;
     const newValue = thisWidget.parseValue(value);
@@ -28,26 +30,31 @@ class BaseWidget{
     }
   }
 
+  //ustawia value
   setValue(value){
     const thisWidget = this;
 
     thisWidget.value = value;
   }
 
+  //parsuje wartosc
   parseValue(value){
     return parseInt(value);
   }
 
+  //sprawdza poprawność ()
   isValid(value){
     return !isNaN(value);
   }
 
+  // implementuje 
   renderValue(){
     const thisWidget = this;
 
     thisWidget.dom.wrapper.innerHTML = thisWidget.correctValue;
   }
 
+  // wysyla event updated
   announce(){
     const thisWidget = this;
     if(thisWidget.dom.wrapper) {

@@ -1,10 +1,6 @@
 import { settings, select, classNames, templates } from '../settings.js';
 import utils from '../utils.js';
-
-//import Product from './Product.js';
-//import Cart from './components/Cart.js';
 import CartProduct from './CartProduct.js';
-//import AmountWidget from './AmountWidget.js';
 
 class Cart{
   constructor(element){
@@ -16,6 +12,7 @@ class Cart{
     thisCart.initActions();
   }
 
+  //Zbiera wszystkie dane dla koszyka
   getElements(element){
     const thisCart = this;
 
@@ -38,6 +35,7 @@ class Cart{
     thisCart.dom.address = thisCart.dom.wrapper.querySelector(select.cart.address);
   }
 
+  //dodaje listenery na koszyk i zmiany ilosci
   initActions() {
     const thisCart = this;
 
@@ -61,6 +59,7 @@ class Cart{
 
   }
 
+  //aktualizuje koszyk
   add(menuProduct){
     const thisCart = this;
 
@@ -85,6 +84,7 @@ class Cart{
     thisCart.update();
   }
 
+  //przelicza liczbe produktow
   update() {
     const thisCart = this;
 
@@ -125,6 +125,7 @@ class Cart{
     }
   }
 
+  //wysyła zamówienie do API
   sendOrder() {
     const thisCart = this;
 

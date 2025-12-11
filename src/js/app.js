@@ -1,11 +1,9 @@
 import { settings, select, classNames } from './settings.js';
-//import utils from './utils.js';
 import Home from './components/Home.js';
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
 import Booking from './components/Booking.js';
-//import CartProduct from './components/CartProduct.js';
-//import AmountWidget from './components/AmountWidget.js';
+
 
 
 const app = {
@@ -94,9 +92,9 @@ const app = {
     thisApp.cart = new Cart(cartElem);
 
     thisApp.productList = document.querySelector(select.containerOf.menu);
-    thisApp.productList.addEventListener('add-to-cart', function(event){
+    /*thisApp.productList.addEventListener('add-to-cart', function(event){
       app.cart.add(event.detail.product);
-    });
+    });*/
   },
 
   init: function(){

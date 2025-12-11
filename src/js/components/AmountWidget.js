@@ -27,6 +27,7 @@ class AmountWidget extends BaseWidget{
     thisWidget.initActions();
   }
 
+  //znajduje inputy
   getElements(){
     const thisWidget = this;
 
@@ -36,17 +37,20 @@ class AmountWidget extends BaseWidget{
     thisWidget.dom.linkIncrease = thisWidget.dom.wrapper.querySelector(select.widgets.amount.linkIncrease);
   }
 
+  //sprawdza poprawność
   isValid(value){
     return !isNaN(value)
       && value >= settings.amountWidget.defaultMin
       && value <= settings.amountWidget.defaultMax;
   }
 
+  //wstawia wartosc do inputa
   renderValue(){
     const thisWidget = this;
     thisWidget.dom.input.value = thisWidget.value;
   }
 
+  //obsluguje zmiany dokonane przez uytkownika
   initActions(){
     const thisWidget = this;
 
